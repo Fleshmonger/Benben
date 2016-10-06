@@ -6,7 +6,7 @@ public class Block : MonoBehaviour
     private float spawnTime = 0f;
     private Vector3 baseScale;
 
-    public float spawnAnimTime = 1f;
+    public float spawnAnimTime = 0.15f, size = 4f, height = 1f;
 
     private void Awake()
     {

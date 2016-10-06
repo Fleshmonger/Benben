@@ -3,11 +3,14 @@ using System.Collections;
 
 public class InputMaster : MonoBehaviour
 {
+    private bool lastMove = false;
+    private int lastMoveX = -1, lastMoveZ = -1;
+
+    public float viewSpeed = 5;
+    public Map map;
     public GameMaster gameMaster;
     public StageMaster stageMaster;
     public CameraMaster cameraMaster;
-
-    public float viewSpeed = 5;
 
     private void Update()
     {
@@ -59,9 +62,31 @@ public class InputMaster : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            Vector3 scale = stageMaster.blockPrefab.transform.localScale / 2;
-            int x = Mathf.RoundToInt(hit.point.x / scale.x), z = Mathf.RoundToInt(hit.point.z / scale.z);
-            gameMaster.PlayerMove(x, z);
+            Vector3 gridPos = stageMaster.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
+            int x = Mathf.RoundToInt(gridPos.x), z = Mathf.RoundToInt(gridPos.z);
+            if (lastMove && lastMoveX == x && lastMoveZ == z)
+            {
+                gameMaster.PlayerMove(x, z);
+                stageMaster.ClearFakeBlock();
+                lastMove = false;
+            }
+            else
+            {
+                Tile tile = map.GetTile(x, z);
+                int y;
+                if (tile != null)
+                {
+                    y = tile.height + 1;
+                }
+                else
+                {
+                    y = Tile.NULL_HEIGHT + 1;
+                }
+                stageMaster.SetFakeBlock(x, y, z);
+                lastMove = true;
+                lastMoveX = x;
+                lastMoveZ = z;
+            }
         }
     }
 }
