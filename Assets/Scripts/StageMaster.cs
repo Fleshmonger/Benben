@@ -7,6 +7,7 @@ public class StageMaster : MonoBehaviour
     private List<Object> props = new List<Object>();
 
     public GameObject fakeBlock;
+    public Material validFakeMaterial, invalidFakeMaterial;
     public Block blockPrefab;
 
     private Vector3 GridToWorld(int x, int y, int z)
@@ -37,9 +38,17 @@ public class StageMaster : MonoBehaviour
         return prop;
     }
 
-    public void SetFakeBlock(int gridX, int gridY, int gridZ)
+    public void SetFakeBlock(int gridX, int gridY, int gridZ, bool isValid)
     {
         fakeBlock.transform.position = GridToWorld(gridX, gridY, gridZ);
+        if (isValid)
+        {
+            fakeBlock.GetComponent<MeshRenderer>().material = validFakeMaterial;
+        }
+        else
+        {
+            fakeBlock.GetComponent<MeshRenderer>().material = invalidFakeMaterial;
+        }
     }
 
     public void ClearFakeBlock()

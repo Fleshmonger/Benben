@@ -36,27 +36,44 @@ public class GameMaster : MonoBehaviour
         return gameOver;
     }
 
+    public Team GetCurrentTeam()
+    {
+        return teams[teamIndex];
+    }
+
+    public int GetCurrentPlayer()
+    {
+        return teamIndex + 1;
+    }
+
+    public bool ValidPlayerMove(int x, int y)
+    {
+        return rulesMaster.IsValid(GetQuadTiles(x, y), GetCurrentTeam());
+    }
+
     public void PlayerMove(int x, int y)
     {
-        if (!gameOver)
+        if (!gameOver && ValidPlayerMove(x, y))
         {
             Tile[,] tiles = GetQuadTiles(x, y);
-            Team team = teams[teamIndex];
-            if (rulesMaster.IsValid(tiles, team))
+            Team team = GetCurrentTeam();
+            int height = tiles[0, 0].height + 1;
+            SetBlock(x, y, height, team);
+            if (height >= goalHeight)
             {
-                int height = tiles[0, 0].height + 1;
-                SetBlock(x, y, height, team);
-                if (height >= goalHeight)
-                {
-                    Debug.Log(team.owner + " won the game!");
-                    gameOver = true;
-                }
-                else
-                {
-                    teamIndex = (teamIndex + 1) % teams.Length;
-                }
+                Debug.Log(team.owner + " won the game!");
+                gameOver = true;
+            }
+            else
+            {
+                NextTeam();
             }
         }
+    }
+
+    public void NextTeam()
+    {
+        teamIndex = (teamIndex + 1) % teams.Length;
     }
 
     // Returns a 2x2 array of tiles within x, y to x + 1, y + 1.

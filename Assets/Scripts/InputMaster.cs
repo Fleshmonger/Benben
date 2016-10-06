@@ -3,7 +3,7 @@ using System.Collections;
 
 public class InputMaster : MonoBehaviour
 {
-    private bool lastMove = false;
+    private bool lastMove = false, lastMoveValid = false;
     private int lastMoveX = -1, lastMoveZ = -1;
 
     public float viewSpeed = 5;
@@ -11,6 +11,7 @@ public class InputMaster : MonoBehaviour
     public GameMaster gameMaster;
     public StageMaster stageMaster;
     public CameraMaster cameraMaster;
+    public RulesMaster rulesMaster;
 
     private void Update()
     {
@@ -64,7 +65,7 @@ public class InputMaster : MonoBehaviour
         {
             Vector3 gridPos = stageMaster.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
             int x = Mathf.RoundToInt(gridPos.x), z = Mathf.RoundToInt(gridPos.z);
-            if (lastMove && lastMoveX == x && lastMoveZ == z)
+            if (lastMove && lastMoveValid && lastMoveX == x && lastMoveZ == z)
             {
                 gameMaster.PlayerMove(x, z);
                 stageMaster.ClearFakeBlock();
@@ -82,7 +83,9 @@ public class InputMaster : MonoBehaviour
                 {
                     y = Tile.NULL_HEIGHT + 1;
                 }
-                stageMaster.SetFakeBlock(x, y, z);
+
+                lastMoveValid = gameMaster.ValidPlayerMove(x, z);
+                stageMaster.SetFakeBlock(x, y, z, lastMoveValid);
                 lastMove = true;
                 lastMoveX = x;
                 lastMoveZ = z;
