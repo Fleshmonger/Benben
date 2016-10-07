@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CameraMaster : MonoBehaviour
+public class CameraManager : MonoBehaviour
 {
     public float minHeight = 10;
     public GameObject eye, canvas;

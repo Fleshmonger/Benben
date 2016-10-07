@@ -1,17 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class InputMaster : MonoBehaviour
+public class InputController : MonoBehaviour
 {
+    public CameraManager cameraManager;
+    public MapManager mapManager;
+    public StageManager stageManager;
+    public TeamsManager teamsManager;
+    public RulesManager rulesManager;
+    public GameController gameController;
+
     private bool lastMove = false, lastMoveValid = false;
     private int lastMoveX = -1, lastMoveZ = -1;
 
     public float viewSpeed = 5;
-    public Map map;
-    public GameMaster gameMaster;
-    public StageMaster stageMaster;
-    public CameraMaster cameraMaster;
-    public RulesMaster rulesMaster;
 
     private void Update()
     {
@@ -23,13 +25,13 @@ public class InputMaster : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            if (!gameMaster.IsGameOver())
+            if (!gameController.gameOver)
             {
                 PlaceBlock();
             }
             else
             {
-                gameMaster.Restart();
+                gameController.RestartScene();
             }
         }
     }
@@ -54,7 +56,7 @@ public class InputMaster : MonoBehaviour
             move += Vector2.left + Vector2.down;
         }
         move *= viewSpeed * Time.deltaTime;
-        cameraMaster.Move(move.x, move.y);
+        cameraManager.Move(move.x, move.y);
     }
 
     private void PlaceBlock()
@@ -63,17 +65,17 @@ public class InputMaster : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(ray, out hit))
         {
-            Vector3 gridPos = stageMaster.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
+            Vector3 gridPos = stageManager.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
             int x = Mathf.RoundToInt(gridPos.x), z = Mathf.RoundToInt(gridPos.z);
             if (lastMove && lastMoveValid && lastMoveX == x && lastMoveZ == z)
             {
-                gameMaster.PlayerMove(x, z);
-                stageMaster.ClearFakeBlock();
+                gameController.PlayerMove(x, z);
+                stageManager.ClearFakeBlock();
                 lastMove = false;
             }
             else
             {
-                Tile tile = map.GetTile(x, z);
+                Tile tile = mapManager.GetTile(x, z);
                 int y;
                 if (tile != null)
                 {
@@ -84,8 +86,8 @@ public class InputMaster : MonoBehaviour
                     y = Tile.NULL_HEIGHT + 1;
                 }
 
-                lastMoveValid = gameMaster.ValidPlayerMove(x, z);
-                stageMaster.SetFakeBlock(x, y, z, lastMoveValid);
+                lastMoveValid = rulesManager.ValidPlayerMove(x, z, teamsManager.activeTeam);
+                stageManager.SetFakeBlock(x, y, z, lastMoveValid);
                 lastMove = true;
                 lastMoveX = x;
                 lastMoveZ = z;

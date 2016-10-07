@@ -1,9 +1,9 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class RulesMaster : MonoBehaviour
+public class RulesManager : MonoBehaviour
 {
-    public Map map;
+    public MapManager mapManager;
 
     private int GetTileHeight(Tile tile)
     {
@@ -15,6 +15,11 @@ public class RulesMaster : MonoBehaviour
         {
             return tile.height;
         }
+    }
+
+    public bool ValidPlayerMove(int x, int y, Team team)
+    {
+        return IsValid(mapManager.GetQuadTiles(x, y), team);
     }
 
     // Determines if the tiles are valid for placing a block on from the given team.

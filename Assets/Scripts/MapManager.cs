@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class Map : MonoBehaviour
+public class MapManager : MonoBehaviour
 {
     private int size = 1, offsetX = 0, offsetY = 0;
     private Region grid = new Tile();
@@ -53,6 +53,26 @@ public class Map : MonoBehaviour
     public void OnDrawGizmos()
     {
         GizmoDrawRegion(0, 0, grid);
+    }
+
+    // Returns a 2x2 array of tiles within x, y to x + 1, y + 1.
+    //TODO Make it return null on null tiles.
+    public Tile[,] GetQuadTiles(int x, int y)
+    {
+        Tile[,] tiles = new Tile[2, 2];
+        for (int i = 0; i < 2; i++)
+        {
+            for (int j = 0; j < 2; j++)
+            {
+                Tile tile = GetTile(x + i, y + j);
+                if (tile == null)
+                {
+                    tile = new Tile();
+                }
+                tiles[i, j] = tile;
+            }
+        }
+        return tiles;
     }
 
     public void GizmoDrawRegion(int x, int y, Region region)

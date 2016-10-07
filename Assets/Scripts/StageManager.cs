@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class StageMaster : MonoBehaviour
+public class StageManager : MonoBehaviour
 {
     private List<Object> props = new List<Object>();
 
