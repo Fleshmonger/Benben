@@ -4,14 +4,14 @@ using System.Collections;
 
 public class GameController : MonoBehaviour
 {
+    private bool _gameOver = false;
+
+    public int goalHeight = 3, blockSize = 2;
     public RulesManager rulesManager;
     public StageManager stageManager;
     public TeamsManager teamsManager;
     public MapManager mapManager;
 
-    public int goalHeight = 3;
-
-    private bool _gameOver = false;
     public bool gameOver
     {
         get
@@ -40,9 +40,9 @@ public class GameController : MonoBehaviour
 
     public void PlayerMove(int x, int y)
     {
-        if (!gameOver && rulesManager.ValidPlayerMove(x, y, teamsManager.activeTeam))
+        if (!gameOver && rulesManager.IsValid(x, y, blockSize, teamsManager.activeTeam))
         {
-            Tile[,] tiles = mapManager.GetQuadTiles(x, y);
+            Tile[,] tiles = mapManager.GetTiles(x, y, blockSize, blockSize);
             int height = tiles[0, 0].height + 1;
             SetBlock(x, y, height, teamsManager.activeTeam);
             if (height >= goalHeight)

@@ -86,7 +86,7 @@ public class InputController : MonoBehaviour
                     y = Tile.NULL_HEIGHT + 1;
                 }
 
-                lastMoveValid = rulesManager.ValidPlayerMove(x, z, teamsManager.activeTeam);
+                lastMoveValid = rulesManager.IsValid(x, z, gameController.blockSize, teamsManager.activeTeam);
                 stageManager.SetFakeBlock(x, y, z, lastMoveValid);
                 lastMove = true;
                 lastMoveX = x;
