@@ -3,13 +3,51 @@ using System.Collections;
 
 public class MapManager : MonoBehaviour
 {
-    private int size = 1, gridOffsetX = 0, gridOffsetY = 0;
-    private Region grid = new Tile();
+    private struct Point
+    {
+        public int x, y;
+
+        public Point(int x, int y)
+        {
+            this.x = x;
+            this.y = y;
+        }
+
+        public void Translate(int x, int y)
+        {
+            this.x += x;
+            this.y += y;
+        }
+
+        public void Translate(Point other)
+        {
+            Translate(other.x, other.y);
+        }
+    }
+
+    private int size = 1;
+    private Point mapOffset = new Point(0, 0);
+    private Region map = new Tile();
+
+    private int WorldToMapX(int x)
+    {
+        return x - mapOffset.x;
+    }
+
+    private int WorldToMapY(int y)
+    {
+        return y - mapOffset.y;
+    }
+
+    public bool IsEmpty()
+    {
+        return size == 1;
+    }
 
     public bool Contains(int x, int y)
     {
-        int gridX = x + gridOffsetX, gridY = y + gridOffsetY;
-        return 0 <= gridX && gridX < size && 0 <= gridY && gridY < size;
+        int mapX = WorldToMapX(x), mapY = WorldToMapY(y);
+        return 0 <= mapX && mapX < size && 0 <= mapY && mapY < size;
     }
 
     public void ExpandMap(bool left, bool down)
@@ -17,11 +55,10 @@ public class MapManager : MonoBehaviour
         int i = left ? 1 : 0, j = down ? 1 : 0;
 
         Quad quad = new Quad(size);
-        quad.branches[i, j] = grid;
-        grid = quad;
+        quad.branches[i, j] = map;
+        map = quad;
 
-        gridOffsetX += i * size;
-        gridOffsetY += j * size;
+        mapOffset.Translate(-i * size, -j * size);
         size *= 2;
     }
 
@@ -29,11 +66,11 @@ public class MapManager : MonoBehaviour
     {
         if (Contains(x, y))
         {
-            grid.SetTile(x + gridOffsetX, y + gridOffsetY, tile);
+            map.SetTile(WorldToMapX(x), WorldToMapY(y), tile);
         }
         else
         {
-            ExpandMap(x < 0, y < 0);
+            ExpandMap(WorldToMapX(x) < 0, WorldToMapY(y) < 0);
             SetTile(x, y, tile);
         }
     }
@@ -42,7 +79,7 @@ public class MapManager : MonoBehaviour
     {
         if (Contains(x, y))
         {
-            return grid.GetTile(x + gridOffsetX, y + gridOffsetY);
+            return map.GetTile(WorldToMapX(x), WorldToMapY(y));
         }
         else
         {
@@ -52,7 +89,7 @@ public class MapManager : MonoBehaviour
 
     public void OnDrawGizmos()
     {
-        GizmoDrawRegion(0, 0, grid);
+        GizmoDrawRegion(0, 0, map);
     }
 
     // Returns an array of tiles from (x,y) with the given dimensions.
@@ -81,12 +118,12 @@ public class MapManager : MonoBehaviour
         {
             if (region is Tile)
             {
-                Gizmos.DrawWireCube(new Vector3(x - gridOffsetX, 0f, y - gridOffsetY), Vector3.one);
+                Gizmos.DrawWireCube(new Vector3(x + mapOffset.x, 0f, y + mapOffset.y), Vector3.one);
             }
             else
             {
                 Quad quad = region as Quad;
-                Gizmos.DrawWireCube(new Vector3(x + quad.branchSize - gridOffsetX - 0.5f, 0, y + quad.branchSize - gridOffsetY - 0.5f), 2 * quad.branchSize * Vector3.one);
+                Gizmos.DrawWireCube(new Vector3(x + quad.branchSize + mapOffset.x - 0.5f, 0, y + quad.branchSize + mapOffset.y - 0.5f), 2 * quad.branchSize * Vector3.one);
                 for (int i = 0; i < 2; i++)
                 {
                     for (int j = 0; j < 2; j++)

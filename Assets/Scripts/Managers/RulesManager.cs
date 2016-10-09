@@ -21,7 +21,9 @@ public class RulesManager : MonoBehaviour
     public bool IsValid(int x, int y, int size, Team team)
     {
         Tile[,] tiles = mapManager.GetTiles(x, y, size, size);
-        return (IsEmpty(tiles)) || (IsLevel(tiles) && IsOwned(tiles, team) && IsComposite(tiles));
+        bool isGrounded = IsEmpty(tiles) && (mapManager.IsEmpty() || IsAdjacent(x, y, size)),
+            isStacked = IsLevel(tiles) && IsOwned(tiles, team) && IsComposite(tiles);
+        return isGrounded || isStacked;
     }
 
     // Determines if all the tiles are empty.
@@ -47,9 +49,9 @@ public class RulesManager : MonoBehaviour
     {
         Vector2[] sides = new Vector2[4];
         sides[0] = new Vector2(x - 1, y - 1);
-        sides[1] = new Vector2(x - 1, y + size);
+        sides[1] = new Vector2(x + size, y - 1);
         sides[2] = new Vector2(x + size, y + size);
-        sides[3] = new Vector2(x + size, y - 1);
+        sides[3] = new Vector2(x - 1, y + size);
         Vector2[] directions = new Vector2[4];
         directions[0] = Vector2.right;
         directions[1] = Vector2.up;
