@@ -6,11 +6,11 @@ public class InputController : MonoBehaviour
     public CameraManager cameraManager;
     public MapManager mapManager;
     public StageManager stageManager;
-    public TeamsManager teamsManager;
     public RulesManager rulesManager;
+    public TeamManager teamManager;
     public GameController gameController;
 
-    private bool lastMove = false, lastMoveValid = false;
+    private bool lastMove, lastMoveValid;
     private int lastMoveX = -1, lastMoveZ = -1;
 
     public float viewSpeed = 5;
@@ -86,7 +86,7 @@ public class InputController : MonoBehaviour
                     y = Tile.NULL_HEIGHT + 1;
                 }
 
-                lastMoveValid = rulesManager.IsValid(x, z, gameController.blockSize, teamsManager.activeTeam);
+                lastMoveValid = rulesManager.IsValid(x, z, gameController.blockSize, teamManager.activeTeam);
                 stageManager.SetFakeBlock(x, y, z, lastMoveValid);
                 lastMove = true;
                 lastMoveX = x;

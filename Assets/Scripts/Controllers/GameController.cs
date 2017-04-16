@@ -9,7 +9,7 @@ public class GameController : MonoBehaviour
     public int goalHeight = 3, blockSize = 2;
     public RulesManager rulesManager;
     public StageManager stageManager;
-    public TeamsManager teamsManager;
+    public TeamManager teamManager;
     public MapManager mapManager;
 
     public bool gameOver
@@ -40,18 +40,18 @@ public class GameController : MonoBehaviour
 
     public void PlayerMove(int x, int y)
     {
-        if (!gameOver && rulesManager.IsValid(x, y, blockSize, teamsManager.activeTeam))
+        if (!gameOver && rulesManager.IsValid(x, y, blockSize, teamManager.activeTeam))
         {
             Tile[,] tiles = mapManager.GetTiles(x, y, blockSize, blockSize);
             int height = tiles[0, 0].height + 1;
-            SetBlock(x, y, height, teamsManager.activeTeam);
+            SetBlock(x, y, height, teamManager.activeTeam);
             if (height >= goalHeight)
             {
                 _gameOver = true;
             }
             else
             {
-                teamsManager.CycleActiveTeam();
+                teamManager.CycleActiveTeam();
             }
         }
     }

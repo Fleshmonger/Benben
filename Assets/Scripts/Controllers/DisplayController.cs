@@ -4,7 +4,7 @@ using System.Collections;
 
 public class DisplayController : MonoBehaviour
 {
-    public TeamsManager teamsManager;
+    public TeamManager teamManager;
     public GameController gameController;
 
     public Text textCurrentPlayer;
@@ -14,11 +14,11 @@ public class DisplayController : MonoBehaviour
         string message;
         if (!gameController.gameOver)
         {
-            message = teamsManager.activeTeam.player + " is active.";
+            message = teamManager.activeTeam.player + " is active.";
         }
         else
         {
-            message = teamsManager.activeTeam.player + " wins!";
+            message = teamManager.activeTeam.player + " wins!";
         }
         textCurrentPlayer.text = message;
     }

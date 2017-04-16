@@ -1,10 +1,10 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class TeamsManager : MonoBehaviour
+public class TeamManager : MonoBehaviour
 {
-    private int activeTeamIndex = 0;
-    private Team _activeTeam = null;
+    private int activeTeamIndex;
+    private Team _activeTeam;
 
     public Team[] teams;
 
