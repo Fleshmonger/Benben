@@ -1,33 +1,115 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class MapManager : MonoBehaviour
+public class MapManager : Singleton<MapManager>
 {
-    private struct Point
+    private int size = 1;
+    private Point2 mapOffset;
+    private Region tiles = new Tile();
+
+    public bool IsEmpty()
     {
-        public int x, y;
+        return size == 1;
+    }
 
-        public Point(int x, int y)
+    public bool Contains(int x, int y)
+    {
+        var mapX = WorldToMapX(x);
+        var mapY = WorldToMapY(y);
+        return 0 <= mapX && mapX < size && 0 <= mapY && mapY < size;
+    }
+
+    public bool Contains(Point2 point)
+    {
+        return Contains(point.x, point.y);
+    }
+
+    public Tile GetTile(int x, int y)
+    {
+        if (Contains(x, y))
         {
-            this.x = x;
-            this.y = y;
+            return tiles.GetTile(WorldToMapX(x), WorldToMapY(y));
         }
+        return null;
+    }
 
-        public void Translate(int x, int y)
+    // Returns an array of tiles from (x, y) with the given dimensions.
+    //TODO Make it return null on null tile.
+    public Tile[,] GetTiles(int x, int y, int width, int length)
+    {
+        var tiles = new Tile[width, length];
+        for (var i = 0; i < width; i++)
         {
-            this.x += x;
-            this.y += y;
+            for (var j = 0; j < length; j++)
+            {
+                var tile = GetTile(x + i, y + j);
+                if (tile == null)
+                {
+                    tile = new Tile();
+                }
+                tiles[i, j] = tile;
+            }
         }
+        return tiles;
+    }
 
-        public void Translate(Point other)
+    public void SetTile(int x, int y, Tile tile)
+    {
+        if (Contains(x, y))
         {
-            Translate(other.x, other.y);
+            tiles.SetTile(WorldToMapX(x), WorldToMapY(y), tile);
+        }
+        else
+        {
+            ExpandMap(WorldToMapX(x) < 0, WorldToMapY(y) < 0);
+            SetTile(x, y, tile);
         }
     }
 
-    private int size = 1;
-    private Point mapOffset = new Point(0, 0);
-    private Region map = new Tile();
+    public void SetTile(Point2 point, Tile tile)
+    {
+        SetTile(point.x, point.y, tile);
+    }
+
+    // Recursive gizmo draw method. Draws a region and whatever it contains.
+    public void GizmoDrawRegion(int x, int y, Region region)
+    {
+        if (region == null)
+        {
+            return;
+        }
+
+        var quad = region as Quad;
+        if (quad != null)
+        {
+            Gizmos.DrawWireCube(new Vector3(x + quad.branchSize + mapOffset.x - 0.5f, 0, y + quad.branchSize + mapOffset.y - 0.5f), 2 * quad.branchSize * Vector3.one);
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    GizmoDrawRegion(x + i * quad.branchSize, y + j * quad.branchSize, quad.branches[i, j]);
+                }
+            }
+        }
+        else
+        {
+            Gizmos.DrawWireCube(new Vector3(x + mapOffset.x, 0f, y + mapOffset.y), Vector3.one);
+        }
+    }
+
+    // Expands the map size.
+    private void ExpandMap(bool left, bool down)
+    {
+        var i = left ? 1 : 0;
+        var j = down ? 1 : 0;
+
+        var quad = new Quad(size);
+        quad.branches[i, j] = tiles;
+        tiles = quad;
+
+        mapOffset -= new Point2(i * size, j * size);
+        size *= 2;
+    }
 
     private int WorldToMapX(int x)
     {
@@ -39,99 +121,9 @@ public class MapManager : MonoBehaviour
         return y - mapOffset.y;
     }
 
-    public bool IsEmpty()
-    {
-        return size == 1;
-    }
-
-    public bool Contains(int x, int y)
-    {
-        int mapX = WorldToMapX(x), mapY = WorldToMapY(y);
-        return 0 <= mapX && mapX < size && 0 <= mapY && mapY < size;
-    }
-
-    public void ExpandMap(bool left, bool down)
-    {
-        int i = left ? 1 : 0, j = down ? 1 : 0;
-
-        Quad quad = new Quad(size);
-        quad.branches[i, j] = map;
-        map = quad;
-
-        mapOffset.Translate(-i * size, -j * size);
-        size *= 2;
-    }
-
-    public void SetTile(int x, int y, Tile tile)
-    {
-        if (Contains(x, y))
-        {
-            map.SetTile(WorldToMapX(x), WorldToMapY(y), tile);
-        }
-        else
-        {
-            ExpandMap(WorldToMapX(x) < 0, WorldToMapY(y) < 0);
-            SetTile(x, y, tile);
-        }
-    }
-
-    public Tile GetTile(int x, int y)
-    {
-        if (Contains(x, y))
-        {
-            return map.GetTile(WorldToMapX(x), WorldToMapY(y));
-        }
-        else
-        {
-            return null;
-        }
-    }
-
+    // Gizmo draw callback.
     public void OnDrawGizmos()
     {
-        GizmoDrawRegion(0, 0, map);
-    }
-
-    // Returns an array of tiles from (x,y) with the given dimensions.
-    //TODO Make it return null on null tile.
-    public Tile[,] GetTiles(int x, int y, int width, int length)
-    {
-        Tile[,] tiles = new Tile[width, length];
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < length; j++)
-            {
-                Tile tile = GetTile(x + i, y + j);
-                if (tile == null)
-                {
-                    tile = new Tile();
-                }
-                tiles[i, j] = tile;
-            }
-        }
-        return tiles;
-    }
-
-    public void GizmoDrawRegion(int x, int y, Region region)
-    {
-        if (region != null)
-        {
-            if (region is Tile)
-            {
-                Gizmos.DrawWireCube(new Vector3(x + mapOffset.x, 0f, y + mapOffset.y), Vector3.one);
-            }
-            else
-            {
-                Quad quad = region as Quad;
-                Gizmos.DrawWireCube(new Vector3(x + quad.branchSize + mapOffset.x - 0.5f, 0, y + quad.branchSize + mapOffset.y - 0.5f), 2 * quad.branchSize * Vector3.one);
-                for (int i = 0; i < 2; i++)
-                {
-                    for (int j = 0; j < 2; j++)
-                    {
-                        GizmoDrawRegion(x + i * quad.branchSize, y + j * quad.branchSize, quad.branches[i, j]);
-                    }
-                }
-            }
-        }
+        GizmoDrawRegion(0, 0, tiles);
     }
 }

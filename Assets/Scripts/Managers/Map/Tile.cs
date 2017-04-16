@@ -2,9 +2,9 @@
 
 public class Tile : Region
 {
-    public const int NULL_HEIGHT = 0;
+    //public const int NULL_HEIGHT = 0;
 
-    public int height = 0;
+    public int height;
     public Team team;
     public GameObject prop;
 

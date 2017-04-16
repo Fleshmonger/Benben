@@ -1,29 +1,19 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class TeamManager : MonoBehaviour
+namespace GameLogic
 {
-    private int activeTeamIndex;
-    private Team _activeTeam;
-
-    public Team[] teams;
-
-    public Team activeTeam
+    public sealed class TeamManager : Singleton<TeamManager>
     {
-        get
+        public Team[] teams;
+
+        private int activeTeamIndex;
+
+        public int teamCount { get { return teams.Length; } }
+        public Team activeTeam { get { return teams[activeTeamIndex]; } }
+
+        public void CycleActiveTeam()
         {
-            return _activeTeam;
+            activeTeamIndex = (activeTeamIndex + 1) % teamCount;
         }
-    }
-
-    private void Awake()
-    {
-        _activeTeam = teams[activeTeamIndex];
-    }
-
-    public void CycleActiveTeam()
-    {
-        activeTeamIndex = (activeTeamIndex + 1) % teams.Length;
-        _activeTeam = teams[activeTeamIndex];
     }
 }

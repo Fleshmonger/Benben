@@ -1,97 +1,96 @@
 ﻿using UnityEngine;
-using System.Collections;
+using GameLogic;
 
-public class InputController : MonoBehaviour
+namespace Interface
 {
-    public CameraManager cameraManager;
-    public MapManager mapManager;
-    public StageManager stageManager;
-    public RulesManager rulesManager;
-    public TeamManager teamManager;
-    public GameController gameController;
-
-    private bool lastMove, lastMoveValid;
-    private int lastMoveX = -1, lastMoveZ = -1;
-
-    public float viewSpeed = 5;
-
-    private void Update()
+    public sealed class InputController : Singleton<InputController>
     {
-        ActionInput();
-        MoveInput();
-    }
+        public float viewSpeed = 5;
+        public CameraManager cameraManager;
 
-    private void ActionInput()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            if (!gameController.gameOver)
-            {
-                PlaceBlock();
-            }
-            else
-            {
-                gameController.RestartScene();
-            }
-        }
-    }
+        private bool lastMove;
+        private bool lastMoveValid;
+        private int lastMoveX = -1, lastMoveZ = -1;
 
-    private void MoveInput()
-    {
-        Vector2 move = Vector2.zero;
-        if (Input.GetKey(KeyCode.A))
+        private void ActionInput()
         {
-            move += Vector2.left + Vector2.up;
-        }
-        if (Input.GetKey(KeyCode.D))
-        {
-            move += Vector2.right + Vector2.down;
-        }
-        if (Input.GetKey(KeyCode.W))
-        {
-            move += Vector2.right + Vector2.up;
-        }
-        if (Input.GetKey(KeyCode.S))
-        {
-            move += Vector2.left + Vector2.down;
-        }
-        move *= viewSpeed * Time.deltaTime;
-        cameraManager.Move(move.x, move.y);
-    }
-
-    private void PlaceBlock()
-    {
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit hit;
-        if (Physics.Raycast(ray, out hit))
-        {
-            Vector3 gridPos = stageManager.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
-            int x = Mathf.RoundToInt(gridPos.x), z = Mathf.RoundToInt(gridPos.z);
-            if (lastMove && lastMoveValid && lastMoveX == x && lastMoveZ == z)
+            if (Input.GetMouseButtonDown(0))
             {
-                gameController.PlayerMove(x, z);
-                stageManager.ClearFakeBlock();
-                lastMove = false;
-            }
-            else
-            {
-                Tile tile = mapManager.GetTile(x, z);
-                int y;
-                if (tile != null)
+                var gameMaster = GameMaster.Instance;
+                if (!gameMaster.isGameOver)
                 {
-                    y = tile.height + 1;
+                    PlaceBlock();
                 }
                 else
                 {
-                    y = Tile.NULL_HEIGHT + 1;
+                    gameMaster.Restart();
                 }
-
-                lastMoveValid = rulesManager.IsValid(x, z, gameController.blockSize, teamManager.activeTeam);
-                stageManager.SetFakeBlock(x, y, z, lastMoveValid);
-                lastMove = true;
-                lastMoveX = x;
-                lastMoveZ = z;
             }
+        }
+
+        private void MoveInput()
+        {
+            var move = Vector2.zero;
+            if (Input.GetKey(KeyCode.A))
+            {
+                move += Vector2.left + Vector2.up;
+            }
+            if (Input.GetKey(KeyCode.D))
+            {
+                move += Vector2.right + Vector2.down;
+            }
+            if (Input.GetKey(KeyCode.W))
+            {
+                move += Vector2.right + Vector2.up;
+            }
+            if (Input.GetKey(KeyCode.S))
+            {
+                move += Vector2.left + Vector2.down;
+            }
+            move *= viewSpeed * Time.deltaTime;
+            cameraManager.Move(move.x, move.y);
+        }
+
+        private void PlaceBlock()
+        {
+            var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit))
+            {
+                var stageManager = StageManager.Instance;
+                var gameMaster = GameMaster.Instance;
+                var gridPos = stageManager.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
+                var x = Mathf.RoundToInt(gridPos.x);
+                var z = Mathf.RoundToInt(gridPos.z);
+                if (lastMove && lastMoveValid && lastMoveX == x && lastMoveZ == z)
+                {
+                    gameMaster.PlayerMove(x, z);
+                    stageManager.ClearFakeBlock();
+                    lastMove = false;
+                }
+                else
+                {
+                    var tile = MapManager.Instance.GetTile(x, z);
+                    var y = 1;
+                    if (tile != null)
+                    {
+                        y += tile.height;
+                    }
+
+                    lastMoveValid = MapUtil.IsValid(x, z, gameMaster.blockSize, TeamManager.Instance.activeTeam, MapManager.Instance);
+                    stageManager.SetFakeBlock(x, y, z, lastMoveValid);
+                    lastMove = true;
+                    lastMoveX = x;
+                    lastMoveZ = z;
+                }
+            }
+        }
+
+        // Unity update callback.
+        private void Update()
+        {
+            ActionInput();
+            MoveInput();
         }
     }
 }

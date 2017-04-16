@@ -75,3 +75,28 @@ public struct Point2
         return n * p;
     }
 }
+
+public struct Point3
+{
+    public static readonly Point3 zero = new Point3(0, 0, 0);
+    public static readonly Point3 one = new Point3(1, 1, 1);
+    public static readonly Point3 right = new Point3(1, 0, 0);
+    public static readonly Point3 up = new Point3(0, 1, 0);
+    public static readonly Point3 forward = new Point3(0, 0, 1);
+    public static readonly Point3 left = new Point3(-1, 0, 0);
+    public static readonly Point3 down = new Point3(0, -1, 0);
+    public static readonly Point3 back = new Point3(0, 0, -1);
+
+    public int x;
+    public int y;
+    public int z;
+
+    public Point3(int x, int y, int z)
+    {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+    }
+
+    public Point3(Point3 point3) : this(point3.x, point3.y, point3.z) { }
+}

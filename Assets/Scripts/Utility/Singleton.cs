@@ -1,16 +1,14 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public abstract class Singleton<T> : MonoBehaviour where T : Component
 {
-    private static T _instance;
-    public static T Instance { get { return _instance; } }
+    public static T Instance { get; private set; }
 
     protected virtual void Awake()
     {
-        if (_instance == null)
+        if (Instance == null)
         {
-            _instance = this as T;
+            Instance = this as T;
         }
         else
         {

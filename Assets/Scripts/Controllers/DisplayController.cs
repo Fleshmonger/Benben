@@ -1,25 +1,27 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
+using GameLogic;
 
-public class DisplayController : MonoBehaviour
+namespace Interface
 {
-    public TeamManager teamManager;
-    public GameController gameController;
-
-    public Text textCurrentPlayer;
-
-    public void Update()
+    public class DisplayController : MonoBehaviour
     {
-        string message;
-        if (!gameController.gameOver)
+        public Text textCurrentPlayer;
+
+        public void Update()
         {
-            message = teamManager.activeTeam.player + " is active.";
+            var activePlayer = TeamManager.Instance.activeTeam.player;
+            string message;
+            if (!GameMaster.Instance.isGameOver)
+            {
+                message = activePlayer + " is active.";
+            }
+            else
+            {
+                message = activePlayer + " wins!";
+            }
+            textCurrentPlayer.text = message;
         }
-        else
-        {
-            message = teamManager.activeTeam.player + " wins!";
-        }
-        textCurrentPlayer.text = message;
     }
 }
