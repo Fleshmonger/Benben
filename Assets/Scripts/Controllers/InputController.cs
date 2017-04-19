@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
-using GameLogic;
+using Gameplay;
+using Gameplay.Map;
 
 namespace Interface
 {
@@ -8,9 +9,8 @@ namespace Interface
         public float viewSpeed = 5;
         public CameraManager cameraManager;
 
-        private bool lastMove;
-        private bool lastMoveValid;
-        private int lastMoveX = -1, lastMoveZ = -1;
+        private bool marked;
+        private Point2 markPos;
 
         private void ActionInput()
         {
@@ -41,11 +41,11 @@ namespace Interface
             }
             if (Input.GetKey(KeyCode.W))
             {
-                move += Vector2.right + Vector2.up;
+                move += Vector2.left + Vector2.down;
             }
             if (Input.GetKey(KeyCode.S))
             {
-                move += Vector2.left + Vector2.down;
+                move += Vector2.right + Vector2.up;
             }
             move *= viewSpeed * Time.deltaTime;
             cameraManager.Move(move.x, move.y);
@@ -59,29 +59,20 @@ namespace Interface
             {
                 var stageManager = StageManager.Instance;
                 var gameMaster = GameMaster.Instance;
-                var gridPos = stageManager.WorldToGrid(hit.point.x, hit.point.y, hit.point.z);
-                var x = Mathf.RoundToInt(gridPos.x);
-                var z = Mathf.RoundToInt(gridPos.z);
-                if (lastMove && lastMoveValid && lastMoveX == x && lastMoveZ == z)
+                var mapManager = MapManager.Instance;
+                var gridPos = stageManager.WorldToGrid(hit.point);
+                var valid = MapUtil.IsValid(gridPos, gameMaster.blockSize, TeamManager.Instance.activeTeam, mapManager);
+                if (marked && valid && markPos == gridPos)
                 {
-                    gameMaster.PlayerMove(x, z);
-                    stageManager.ClearFakeBlock();
-                    lastMove = false;
+                    gameMaster.PlayerMove(gridPos);
+                    stageManager.ClearMark();
+                    marked = false;
                 }
                 else
                 {
-                    var tile = MapManager.Instance.GetTile(x, z);
-                    var y = 1;
-                    if (tile != null)
-                    {
-                        y += tile.height;
-                    }
-
-                    lastMoveValid = MapUtil.IsValid(x, z, gameMaster.blockSize, TeamManager.Instance.activeTeam, MapManager.Instance);
-                    stageManager.SetFakeBlock(x, y, z, lastMoveValid);
-                    lastMove = true;
-                    lastMoveX = x;
-                    lastMoveZ = z;
+                    stageManager.SetMarkPos(gridPos.x, gridPos.y, mapManager.GetDepth(gridPos), valid);
+                    marked = true;
+                    markPos = gridPos;
                 }
             }
         }

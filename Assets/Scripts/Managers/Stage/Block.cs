@@ -1,12 +1,13 @@
 ﻿using UnityEngine;
-using System.Collections;
 
-public class Block : MonoBehaviour
+public sealed class Block : MonoBehaviour
 {
+    public float spawnAnimTime = 0.15f;
+    public float size = 4f;
+    public float depth = 1f;
+
     private float spawnTime = 0f;
     private Vector3 baseScale;
-
-    public float spawnAnimTime = 0.15f, size = 4f, height = 1f;
 
     private void Awake()
     {
@@ -15,17 +16,13 @@ public class Block : MonoBehaviour
         transform.localScale = Vector3.zero;
     }
 
-    void Update()
+    private void Update()
     {
-        float scale;
+        var scale = 1f;
         if (Time.time < spawnTime + spawnAnimTime)
         {
-            float fraction = (Time.time - spawnTime) / spawnAnimTime;
-            scale = fraction * fraction;
-        }
-        else
-        {
-            scale = 1f;
+            var t = (Time.time - spawnTime) / spawnAnimTime;
+            scale = t * t;
         }
         transform.localScale = scale * baseScale;
     }

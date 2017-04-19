@@ -40,7 +40,31 @@ public struct Point2
         return new Vector2(x, y);
     }
 
-    override public string ToString()
+    public override bool Equals(object obj)
+    {
+        if (obj is Point2)
+        {
+            return this == (Point2)obj;
+        }
+        return base.Equals(obj);
+    }
+
+    public override int GetHashCode()
+    {
+        return x.GetHashCode() + 7 * y.GetHashCode();
+    }
+
+    public static bool operator ==(Point2 a, Point2 b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+
+    public static bool operator !=(Point2 a, Point2 b)
+    {
+        return a.x != b.x || a.y != b.y;
+    }
+
+    public override string ToString()
     {
         return "(" + x + ", " + y + ")";
     }
@@ -99,4 +123,14 @@ public struct Point3
     }
 
     public Point3(Point3 point3) : this(point3.x, point3.y, point3.z) { }
+
+    public override string ToString()
+    {
+        return "(" + x + ", " + y + ", " + z + ")";
+    }
+
+    public static implicit operator Point2(Point3 point)
+    {
+        return new Point2(point.x, point.y);
+    }
 }

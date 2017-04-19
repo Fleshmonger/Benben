@@ -1,99 +1,93 @@
-﻿public class Quad : Region
+﻿namespace Gameplay.Map
 {
-    public int branchSize;
-    public Region[,] branches = new Region[2, 2];
-
-    public Quad(int branchSize)
+    public sealed class Quad : Region
     {
-        this.branchSize = branchSize;
-    }
+        public int branchSize;
+        public Region[,] branches = new Region[2, 2];
 
-    private Region GetBranch(int x, int y)
-    {
-        return branches[x / branchSize, y / branchSize];
-    }
-
-    private Region NewBranch(int x, int y)
-    {
-        Region branch;
-        if (branchSize >= 2)
+        public Quad(int branchSize)
         {
-            branch = new Quad(branchSize / 2);
+            this.branchSize = branchSize;
         }
-        else
-        {
-            branch = new Tile();
-        }
-        branches[x / branchSize, y / branchSize] = branch;
-        return branch;
-    }
 
-    public override Tile GetTile(int x, int y)
-    {
-        Region branch = GetBranch(x, y);
-        if (branch != null)
+        private Region GetBranch(int x, int y)
         {
-            return branch.GetTile(x % branchSize, y % branchSize);
+            return branches[x / branchSize, y / branchSize];
         }
-        else
+
+        private Region NewBranch(int x, int y)
         {
+            Region branch;
+            if (branchSize >= 2)
+            {
+                branch = new Quad(branchSize / 2);
+            }
+            else
+            {
+                branch = new Tile();
+            }
+            branches[x / branchSize, y / branchSize] = branch;
+            return branch;
+        }
+
+        public override Tile GetTile(int x, int y)
+        {
+            var branch = GetBranch(x, y);
+            if (branch != null)
+            {
+                return branch.GetTile(x % branchSize, y % branchSize);
+            }
             return null;
         }
-    }
 
-    public override int GetHeight(int x, int y)
-    {
-        Region branch = GetBranch(x, y);
-        if (branch != null)
+        public override int GetDepth(int x, int y)
         {
-            return branch.GetHeight(x % branchSize, y % branchSize);
-        }
-        else
-        {
+            var branch = GetBranch(x, y);
+            if (branch != null)
+            {
+                return branch.GetDepth(x % branchSize, y % branchSize);
+            }
             return 0;
         }
-    }
 
-    public override Team GetTeam(int x, int y)
-    {
-        Region branch = GetBranch(x, y);
-        if (branch != null)
+        public override Team GetTeam(int x, int y)
         {
-            return branch.GetTeam(x % branchSize, y % branchSize);
-        }
-        else
-        {
+            var branch = GetBranch(x, y);
+            if (branch != null)
+            {
+                return branch.GetTeam(x % branchSize, y % branchSize);
+            }
             return null;
         }
-    }
 
-    public override void SetTile(int x, int y, Tile tile)
-    {
-        Region branch = GetBranch(x, y);
-        if (branch == null)
+        public override void SetTile(int x, int y, Tile tile)
         {
-            branch = NewBranch(x, y);
+            var branch = GetBranch(x, y);
+            if (branch == null)
+            {
+                branch = NewBranch(x, y);
+            }
+            branch.SetTile(x % branchSize, y % branchSize, tile);
         }
-        branch.SetTile(x % branchSize, y % branchSize, tile);
-    }
 
-    public override void SetHeight(int x, int y, int height)
-    {
-        Region branch = GetBranch(x, y);
-        if (branch == null)
+        public override void SetDepth(int x, int y, int depth)
         {
-            branch = NewBranch(x, y);
+            var branch = GetBranch(x, y);
+            if (branch == null)
+            {
+                branch = NewBranch(x, y);
+            }
+            branch.SetDepth(x % branchSize, y % branchSize, depth);
         }
-        branch.SetHeight(x % branchSize, y % branchSize, height);
-    }
 
-    public override void SetTeam(int x, int y, Team team)
-    {
-        Region branch = GetBranch(x, y);
-        if (branch == null)
+        public override void SetTeam(int x, int y, Team team)
         {
-            branch = NewBranch(x, y);
+            var branch = GetBranch(x, y);
+            if (branch == null)
+            {
+                branch = NewBranch(x, y);
+            }
+            branch.SetTeam(x % branchSize, y % branchSize, team);
         }
-        branch.SetTeam(x % branchSize, y % branchSize, team);
     }
 }

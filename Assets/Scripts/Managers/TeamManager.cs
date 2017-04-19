@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameLogic
+namespace Gameplay
 {
     public sealed class TeamManager : Singleton<TeamManager>
     {

@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using System.Collections;
+using Gameplay.Map;
 
-namespace GameLogic
+namespace Gameplay
 {
-    //TODO Rename.
     public class GameMaster : Singleton<GameMaster>
     {
-        public int goalHeight = 3;
+        public int goalDepth = 3;
         public int blockSize = 2;
 
         public bool isGameOver { get; private set; }
@@ -20,12 +20,12 @@ namespace GameLogic
         public void PlayerMove(int x, int y)
         {
             var teamManager = TeamManager.Instance;
+            var mapManager = MapManager.Instance;
             if (!isGameOver && MapUtil.IsValid(x, y, blockSize, teamManager.activeTeam, MapManager.Instance))
             {
-                var tiles = MapManager.Instance.GetTiles(x, y, blockSize, blockSize);
-                int height = tiles[0, 0].height + 1;
-                SetBlock(x, y, height, teamManager.activeTeam);
-                if (height >= goalHeight)
+                var depth = mapManager.GetDepth(x, y) + 1;
+                SetBlock(x, y, depth, teamManager.activeTeam);
+                if (depth >= goalDepth)
                 {
                     isGameOver = true;
                 }
@@ -36,10 +36,15 @@ namespace GameLogic
             }
         }
 
-        private void SetBlock(int x, int y, int height, Team team)
+        public void PlayerMove(Point2 pos)
         {
-            var prop = StageManager.Instance.AddBlock(x, height, y, team);
-            var tile = new Tile(height, team, prop);
+            PlayerMove(pos.x, pos.y);
+        }
+
+        private void SetBlock(int x, int y, int depth, Team team)
+        {
+            var prop = StageManager.Instance.AddBlock(x, y, depth, team);
+            var tile = new Tile(depth, team, prop);
             var map = MapManager.Instance;
             for (var i = 0; i < 2; i++)
             {

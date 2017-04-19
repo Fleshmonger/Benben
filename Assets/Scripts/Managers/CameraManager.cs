@@ -3,12 +3,12 @@ using System.Collections;
 
 public class CameraManager : MonoBehaviour
 {
-    public float minHeight = 10;
-    public GameObject eye, canvas;
+    public GameObject eye;
+    public GameObject board;
 
-    public void Move(float x, float z)
+    public void Move(float x, float y)
     {
-        eye.transform.Translate(x, 0f, z);
-        canvas.transform.Translate(x, 0f, z);
+        eye.transform.Translate(x, y, 0);
+        board.transform.Translate(x, y, 0);
     }
 }

@@ -1,54 +1,55 @@
 ﻿using UnityEngine;
 
-public class Tile : Region
+namespace Gameplay.Map
 {
-    //public const int NULL_HEIGHT = 0;
-
-    public int height;
-    public Team team;
-    public GameObject prop;
-
-    private void Initialize(int height, Team team, GameObject prop)
+    public sealed class Tile : Region
     {
-        this.height = height;
-        this.team = team;
-        this.prop = prop;
-    }
+        public int depth;
+        public Team team;
+        public GameObject prop;
 
-    public Tile(int height, Team team, GameObject prop)
-    {
-        Initialize(height, team, prop);
-    }
+        private void Initialize(int depth, Team team, GameObject prop)
+        {
+            this.depth = depth;
+            this.team = team;
+            this.prop = prop;
+        }
 
-    public Tile() : this(0, null, null) { }
+        public Tile(int depth, Team team, GameObject prop)
+        {
+            Initialize(depth, team, prop);
+        }
 
-    public override Tile GetTile(int x, int y)
-    {
-        return this;
-    }
+        public Tile() : this(0, null, null) { }
 
-    public override int GetHeight(int x, int y)
-    {
-        return height;
-    }
+        public override Tile GetTile(int x, int y)
+        {
+            return this;
+        }
 
-    public override Team GetTeam(int x, int y)
-    {
-        return team;
-    }
+        public override int GetDepth(int x, int y)
+        {
+            return depth;
+        }
 
-    public override void SetTile(int x, int y, Tile tile)
-    {
-        Initialize(tile.height, tile.team, tile.prop);
-    }
+        public override Team GetTeam(int x, int y)
+        {
+            return team;
+        }
 
-    public override void SetHeight(int x, int y, int height)
-    {
-        this.height = Mathf.Max(0, height);
-    }
+        public override void SetTile(int x, int y, Tile tile)
+        {
+            Initialize(tile.depth, tile.team, tile.prop);
+        }
 
-    public override void SetTeam(int x, int y, Team team)
-    {
-        this.team = team;
+        public override void SetDepth(int x, int y, int depth)
+        {
+            this.depth = Mathf.Max(0, depth);
+        }
+
+        public override void SetTeam(int x, int y, Team team)
+        {
+            this.team = team;
+        }
     }
 }

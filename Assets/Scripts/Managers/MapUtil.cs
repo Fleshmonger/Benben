@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace GameLogic
+namespace Gameplay.Map
 {
     public static class MapUtil
     {
@@ -13,6 +13,11 @@ namespace GameLogic
             return grounded || stacked;
         }
 
+        public static bool IsValid(Point2 point, int size, Team team, MapManager map)
+        {
+            return IsValid(point.x, point.y, size, team, map);
+        }
+
         // Determines if all the tiles are empty.
         public static bool IsEmpty(Tile[,] tiles)
         {
@@ -22,7 +27,7 @@ namespace GameLogic
                 for (var j = 0; j < size.height; j++)
                 {
                     var tile = tiles[i, j];
-                    if (tile != null && tile.height > 0)
+                    if (tile != null && tile.depth > 0)
                     {
                         return false;
                     }
@@ -51,7 +56,7 @@ namespace GameLogic
                     sides[j] += directions[j];
                     var point = sides[j];
                     var tile = map.GetTile((int)point.x, (int)point.y);
-                    if (tile != null && tile.height > 0)
+                    if (tile != null && tile.depth > 0)
                     {
                         return true;
                     }
@@ -127,7 +132,7 @@ namespace GameLogic
         {
             if (tile != null)
             {
-                return tile.height;
+                return tile.depth;
             }
             return 0;
         }
