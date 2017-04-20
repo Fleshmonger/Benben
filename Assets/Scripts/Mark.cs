@@ -3,7 +3,7 @@ using System.Collections;
 
 public class Mark : MonoBehaviour
 {
-    public MeshRenderer renderer;
+    public MeshRenderer meshRenderer;
     public Material validMarkMaterial;
     public Material invalidMarkMaterial;
 
@@ -11,11 +11,11 @@ public class Mark : MonoBehaviour
     {
         if (valid)
         {
-            renderer.material = validMarkMaterial;
+            meshRenderer.material = validMarkMaterial;
         }
         else
         {
-            renderer.material = invalidMarkMaterial;
+            meshRenderer.material = invalidMarkMaterial;
         }
     }
 }

@@ -6,49 +6,74 @@ namespace Interface
 {
     public sealed class InputController : Singleton<InputController>
     {
+        private readonly Plane contactPlane = new Plane(Vector3.back, Vector3.zero);
+
         public float viewSpeed = 5;
         public CameraManager cameraManager;
 
         private bool marked;
+        private bool moving;
         private Point2 markPos;
+        private Vector3 movePos;
+        private Vector3 cameraMovePos;
 
-        private void ActionInput()
+        private bool InputAction()
         {
-            if (Input.GetMouseButtonDown(0))
-            {
-                var gameMaster = GameMaster.Instance;
-                if (!gameMaster.isGameOver)
-                {
-                    PlaceBlock();
-                }
-                else
-                {
-                    gameMaster.Restart();
-                }
-            }
+            return Input.GetMouseButtonDown(0);
         }
 
-        private void MoveInput()
+        private bool InputMove()
         {
-            var move = Vector2.zero;
-            if (Input.GetKey(KeyCode.A))
+            return Input.GetMouseButton(0) && Input.GetMouseButton(1);
+        }
+
+        private void UpdateAction()
+        {
+            if (!InputAction() || InputMove())
             {
-                move += Vector2.left + Vector2.up;
+                return;
             }
-            if (Input.GetKey(KeyCode.D))
+            var gameMaster = GameMaster.Instance;
+            if (!gameMaster.isGameOver)
             {
-                move += Vector2.right + Vector2.down;
+                PlaceBlock();
             }
-            if (Input.GetKey(KeyCode.W))
+            else
             {
-                move += Vector2.left + Vector2.down;
+                gameMaster.Restart();
             }
-            if (Input.GetKey(KeyCode.S))
+            return;
+        }
+
+        private Vector3 GetContactPoint(Vector3 pixelCoords)
+        {
+            var ray = Camera.main.ScreenPointToRay(pixelCoords);
+            float enter;
+            if (contactPlane.Raycast(ray, out enter))
             {
-                move += Vector2.right + Vector2.up;
+                return ray.GetPoint(enter);
             }
-            move *= viewSpeed * Time.deltaTime;
-            cameraManager.Move(move.x, move.y);
+            return Vector3.zero;
+        }
+
+        private void UpdateMove()
+        {
+            if (!InputMove())
+            {
+                moving = false;
+                return;
+            }
+            var inputPos = Input.mousePosition;
+            if (moving)
+            {
+                var delta = inputPos - movePos;
+                var horiz = Camera.main.aspect * Camera.main.orthographicSize / (Camera.main.pixelWidth / 2f);
+                var verti = Camera.main.orthographicSize / (Camera.main.pixelHeight / 2f);
+                cameraManager.transform.localPosition -= new Vector3(-delta.x * horiz, (delta.y * Mathf.Sqrt(2)) * verti);
+            }
+            movePos = inputPos;
+            moving = true;
+            return;
         }
 
         private void PlaceBlock()
@@ -80,8 +105,8 @@ namespace Interface
         // Unity update callback.
         private void Update()
         {
-            ActionInput();
-            MoveInput();
+            UpdateAction();
+            UpdateMove();
         }
     }
 }

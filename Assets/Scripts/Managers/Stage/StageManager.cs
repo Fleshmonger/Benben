@@ -51,7 +51,6 @@ namespace Gameplay
 
         public void SetMarkPos(int gridX, int gridY, int gridZ, bool isValid)
         {
-            var meshRenderer = mark.GetComponent<MeshRenderer>();
             mark.gameObject.SetActive(true);
             mark.transform.position = GridToWorld(gridX, gridY, gridZ);
             mark.SetValid(isValid);
