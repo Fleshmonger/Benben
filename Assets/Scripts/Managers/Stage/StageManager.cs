@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
-using System.Collections;
 using System.Collections.Generic;
+using Geometry;
 
 namespace Gameplay
 {
@@ -20,31 +20,31 @@ namespace Gameplay
             return new Vector3(worldX, worldY, worldZ);
         }
 
-        public Vector3 GridToWorld(Point3 gridPos)
+        public Vector3 GridToWorld(Vector3I gridPos)
         {
             return GridToWorld(gridPos.x, gridPos.y, gridPos.z);
         }
 
-        public Point2 WorldToGrid(float x, float y)
+        public Vector2I WorldToGrid(float x, float y)
         {
             var gridX = Mathf.RoundToInt(x / (blockPrefab.size / 2));
             var gridY = Mathf.RoundToInt(y / (blockPrefab.size / 2));
-            return new Point2(gridX, gridY);
+            return new Vector2I(gridX, gridY);
         }
 
-        public Point2 WorldToGrid(Vector2 worldPos)
+        public Vector2I WorldToGrid(Vector2 worldPos)
         {
             return WorldToGrid(worldPos.x, worldPos.y);
         }
 
-        public Point3 WorldToGrid(float x, float y, float z)
+        public Vector3I WorldToGrid(float x, float y, float z)
         {
             var point2 = WorldToGrid(x, y);
             var gridZ = Mathf.RoundToInt(z / blockPrefab.depth);
-            return new Point3(point2.x, point2.y, gridZ);
+            return new Vector3I(point2.x, point2.y, gridZ);
         }
 
-        public Point3 WorldToGrid(Vector3 worldPos)
+        public Vector3I WorldToGrid(Vector3 worldPos)
         {
             return WorldToGrid(worldPos.x, worldPos.y, worldPos.z);
         }

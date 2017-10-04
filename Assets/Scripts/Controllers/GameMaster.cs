@@ -1,7 +1,6 @@
-﻿using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
+﻿using UnityEngine.SceneManagement;
 using Gameplay.Map;
+using Geometry;
 
 namespace Gameplay
 {
@@ -20,8 +19,8 @@ namespace Gameplay
         public void PlayerMove(int x, int y)
         {
             var teamManager = TeamManager.Instance;
-            var mapManager = MapManager.Instance;
-            if (!isGameOver && MapUtil.IsValid(x, y, blockSize, teamManager.activeTeam, MapManager.Instance))
+            var mapManager = Map.Map.Instance;
+            if (!isGameOver && MapUtil.IsValid(x, y, blockSize, teamManager.activeTeam, Map.Map.Instance))
             {
                 var depth = mapManager.GetDepth(x, y) + 1;
                 SetBlock(x, y, depth, teamManager.activeTeam);
@@ -36,7 +35,7 @@ namespace Gameplay
             }
         }
 
-        public void PlayerMove(Point2 pos)
+        public void PlayerMove(Vector2I pos)
         {
             PlayerMove(pos.x, pos.y);
         }
@@ -45,12 +44,12 @@ namespace Gameplay
         {
             var prop = StageManager.Instance.AddBlock(x, y, depth, team);
             var tile = new Tile(depth, team, prop);
-            var map = MapManager.Instance;
+            var map = Map.Map.Instance;
             for (var i = 0; i < 2; i++)
             {
                 for (var j = 0; j < 2; j++)
                 {
-                    map.SetTile(x + i, y + j, tile);
+                    map.SetTile(tile, x + i, y + j);
                 }
             }
         }

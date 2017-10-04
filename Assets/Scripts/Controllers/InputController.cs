@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using Gameplay;
 using Gameplay.Map;
+using Geometry;
 
 namespace Interface
 {
@@ -13,7 +14,7 @@ namespace Interface
 
         private bool marked;
         private bool moving;
-        private Point2 markPos;
+        private Vector2I markPos;
         private Vector3 movePos;
         private Vector3 cameraMovePos;
 
@@ -84,7 +85,7 @@ namespace Interface
             {
                 var stageManager = StageManager.Instance;
                 var gameMaster = GameMaster.Instance;
-                var mapManager = MapManager.Instance;
+                var mapManager = Map.Instance;
                 var gridPos = stageManager.WorldToGrid(hit.point);
                 var valid = MapUtil.IsValid(gridPos, gameMaster.blockSize, TeamManager.Instance.activeTeam, mapManager);
                 if (marked && valid && markPos == gridPos)

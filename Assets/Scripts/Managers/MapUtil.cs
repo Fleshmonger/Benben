@@ -1,11 +1,12 @@
 ﻿using UnityEngine;
+using Geometry;
 
 namespace Gameplay.Map
 {
     public static class MapUtil
     {
         // Determines if the tiles are valid for placing a block with a given size from the given team.
-        public static bool IsValid(int x, int y, int size, Team team, MapManager map)
+        public static bool IsValid(int x, int y, int size, Team team, Map map)
         {
             var tiles = map.GetTiles(x, y, size, size);
             var grounded = IsEmpty(tiles) && (map.IsEmpty() || IsAdjacent(x, y, size, map));
@@ -13,7 +14,7 @@ namespace Gameplay.Map
             return grounded || stacked;
         }
 
-        public static bool IsValid(Point2 point, int size, Team team, MapManager map)
+        public static bool IsValid(Vector2I point, int size, Team team, Map map)
         {
             return IsValid(point.x, point.y, size, team, map);
         }
@@ -37,7 +38,7 @@ namespace Gameplay.Map
         }
 
         // Determines if any of the tiles is adjacent to existing tiles.
-        public static bool IsAdjacent(int x, int y, int size, MapManager map)
+        public static bool IsAdjacent(int x, int y, int size, Map map)
         {
             var sides = new Vector2[4];
             sides[0] = new Vector2(x - 1, y - 1);
