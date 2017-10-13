@@ -8,7 +8,14 @@ namespace Gameplay.Map
         // Determines if the tiles are valid for placing a block with a given size from the given team.
         public static bool IsValid(int x, int y, int size, Team team, Map map)
         {
-            var tiles = map.GetTiles(x, y, size, size);
+            var tiles = new Tile[size, size];
+            for (var i = 0; i < size; i++)
+            {
+                for (var j = 0; j < size; j++)
+                {
+                    tiles[i, j] = map.GetTile(x + i, y + j);
+                }
+            }
             var grounded = IsEmpty(tiles) && (map.IsEmpty() || IsAdjacent(x, y, size, map));
             var stacked = IsLevel(tiles) && IsOwned(tiles, team) && IsComposite(tiles);
             return grounded || stacked;
@@ -22,13 +29,13 @@ namespace Gameplay.Map
         // Determines if all the tiles are empty.
         public static bool IsEmpty(Tile[,] tiles)
         {
-            var size = new Size(tiles);
-            for (var i = 0; i < size.width; i++)
+            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            for (var i = 0; i < size.Width; i++)
             {
-                for (var j = 0; j < size.height; j++)
+                for (var j = 0; j < size.Height; j++)
                 {
                     var tile = tiles[i, j];
-                    if (tile != null && tile.depth > 0)
+                    if (tile.Height > 0)
                     {
                         return false;
                     }
@@ -57,7 +64,7 @@ namespace Gameplay.Map
                     sides[j] += directions[j];
                     var point = sides[j];
                     var tile = map.GetTile((int)point.x, (int)point.y);
-                    if (tile != null && tile.depth > 0)
+                    if (tile.Height > 0)
                     {
                         return true;
                     }
@@ -69,13 +76,13 @@ namespace Gameplay.Map
         // Determines if any of the tiles match the team.
         public static bool IsOwned(Tile[,] tiles, Team team)
         {
-            var size = new Size(tiles);
-            for (var i = 0; i < size.width; i++)
+            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            for (var i = 0; i < size.Width; i++)
             {
-                for (var j = 0; j < size.height; j++)
+                for (var j = 0; j < size.Height; j++)
                 {
                     var tile = tiles[i, j];
-                    if (tile != null && tile.team == team)
+                    if (tile.Team == team)
                     {
                         return true;
                     }
@@ -87,13 +94,13 @@ namespace Gameplay.Map
         // Determines if the tiles are of the same height.
         public static bool IsLevel(Tile[,] tiles)
         {
-            var size = new Size(tiles);
-            var depth = GetTileDepth(tiles[0, 0]);
-            for (var i = 0; i < size.width; i++)
+            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            var depth = tiles[0, 0].Height;
+            for (var i = 0; i < size.Width; i++)
             {
-                for (var j = 0; j < size.height; j++)
+                for (var j = 0; j < size.Height; j++)
                 {
-                    if (depth != GetTileDepth(tiles[i, j]))
+                    if (depth != tiles[i, j].Height)
                     {
                         return false;
                     }
@@ -105,37 +112,28 @@ namespace Gameplay.Map
         // Determines if the tiles contains two different blocks.
         public static bool IsComposite(Tile[,] tiles)
         {
-            var size = new Size(tiles);
+            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
             GameObject prop = null;
-            for (var i = 0; i < size.width; i++)
+            for (var i = 0; i < size.Width; i++)
             {
-                for (var j = 0; j < size.height; j++)
+                for (var j = 0; j < size.Height; j++)
                 {
                     var tile = tiles[i, j];
-                    if (tile == null || tile.prop == null)
+                    if (tile.Prop == null)
                     {
                         continue;
                     }
                     if (prop == null)
                     {
-                        prop = tile.prop;
+                        prop = tile.Prop;
                     }
-                    else if (tile.prop != prop)
+                    else if (tile.Prop != prop)
                     {
                         return true;
                     }
                 }
             }
             return false;
-        }
-
-        private static int GetTileDepth(Tile tile)
-        {
-            if (tile != null)
-            {
-                return tile.depth;
-            }
-            return 0;
         }
     }
 }

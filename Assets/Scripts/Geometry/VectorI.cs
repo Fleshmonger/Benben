@@ -141,6 +141,25 @@ namespace Geometry
         }
 
         #endregion
+
+        #region Conversions
+
+        public static implicit operator Size(Vector2I vector)
+        {
+            return new Size(vector.x, vector.y);
+        }
+
+        public static implicit operator Vector2(Vector2I vector)
+        {
+            return new Vector2(vector.x, vector.y);
+        }
+
+        public static implicit operator Vector3I(Vector2I vector)
+        {
+            return new Vector3I(vector.x, vector.y);
+        }
+
+        #endregion
     }
 
     /// <summary> Representation of 3D integer vectors and points. </summary>
@@ -197,6 +216,9 @@ namespace Geometry
             this.z = z;
         }
 
+        /// <summary> Creates a new vector with given x, y components and sets z to zero. </summary>
+        public Vector3I(int x, int y) : this(x, y, 0) { }
+
         /// <summary> Creates a new vector copy of the given vector. </summary>
         public Vector3I(Vector3I point3) : this(point3.x, point3.y, point3.z) { }
 
@@ -212,7 +234,7 @@ namespace Geometry
 
         #endregion
 
-        #region Operators
+        #region Conversions
         
         public static implicit operator Vector2I(Vector3I point)
         {

@@ -96,7 +96,7 @@ namespace Interface
                 }
                 else
                 {
-                    stageManager.SetMarkPos(gridPos.x, gridPos.y, mapManager.GetDepth(gridPos), valid);
+                    stageManager.SetMarkPos(gridPos.x, gridPos.y, mapManager.GetTile(gridPos).Height, valid);
                     marked = true;
                     markPos = gridPos;
                 }

@@ -2,54 +2,44 @@
 
 namespace Gameplay.Map
 {
-    public sealed class Tile : Region
+    /// <summary> Representation of a tile object. </summary>
+    public struct Tile
     {
-        public int depth;
-        public Team team;
-        public GameObject prop;
+        #region Fields
 
-        private void Initialize(int depth, Team team, GameObject prop)
+        private int _height;
+
+        #endregion
+
+        #region Properties
+
+        /// <summary> The layer which the tile is in. </summary>
+        public int Height
         {
-            this.depth = depth;
-            this.team = team;
-            this.prop = prop;
+            get
+            {
+                return _height;
+            }
+            set
+            {
+                _height = Mathf.Max(value, 0);
+            }
         }
 
-        public Tile(int depth, Team team, GameObject prop)
-        {
-            Initialize(depth, team, prop);
-        }
+        /// <summary> The owner of the tile. </summary>
+        public Team Team { get; set; }
 
-        public Tile() : this(0, null, null) { }
+        /// <summary> The world object representation of the tile. </summary>
+        public GameObject Prop { get; set; }
 
-        public override Tile GetTile(int x, int y)
-        {
-            return this;
-        }
+        #endregion
 
-        public override int GetDepth(int x, int y)
+        /// <summary> Creates a new tile with a given height, team and prop. </summary>
+        public Tile(int height, Team team, GameObject prop)
         {
-            return depth;
-        }
-
-        public override Team GetTeam(int x, int y)
-        {
-            return team;
-        }
-
-        public override void SetTile(int x, int y, Tile tile)
-        {
-            Initialize(tile.depth, tile.team, tile.prop);
-        }
-
-        public override void SetDepth(int x, int y, int depth)
-        {
-            this.depth = Mathf.Max(0, depth);
-        }
-
-        public override void SetTeam(int x, int y, Team team)
-        {
-            this.team = team;
+            _height = Mathf.Max(height, 0);
+            Team = team;
+            Prop = prop;
         }
     }
 }

@@ -22,9 +22,9 @@ namespace Gameplay
             var mapManager = Map.Map.Instance;
             if (!isGameOver && MapUtil.IsValid(x, y, blockSize, teamManager.activeTeam, Map.Map.Instance))
             {
-                var depth = mapManager.GetDepth(x, y) + 1;
-                SetBlock(x, y, depth, teamManager.activeTeam);
-                if (depth >= goalDepth)
+                var height = mapManager.GetTile(x, y).Height + 1;
+                SetBlock(x, y, height, teamManager.activeTeam);
+                if (height >= goalDepth)
                 {
                     isGameOver = true;
                 }
