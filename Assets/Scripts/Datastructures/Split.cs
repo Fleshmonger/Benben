@@ -27,7 +27,7 @@ namespace Datastructures
         #region Properties
 
         /// <summary> The size of the subtree space. </summary>
-        public Size Dimensions { get; private set; }
+        public Size2I Dimensions { get; private set; }
 
         /// <summary> The orientation of the partition. </summary>
         public Partition Orientation { get; private set; }
@@ -36,7 +36,7 @@ namespace Datastructures
         public int SplitLength { get; private set; }
 
         /// <summary> Dimensions of the first subtree. </summary>
-        public Size FirstDimensions
+        public Size2I FirstDimensions
         {
             get
             {
@@ -45,7 +45,7 @@ namespace Datastructures
         }
 
         /// <summary> Dimensions of the second subtree. </summary>
-        public Size SecondDimensions
+        public Size2I SecondDimensions
         {
             get
             {
@@ -66,7 +66,7 @@ namespace Datastructures
         /// <summary>
         /// Creates a new split with given dimensions and a split at the center of the longest dimension.
         /// </summary>
-        public Split(Size dimensions)
+        public Split(Size2I dimensions)
         {
             var orientation = dimensions.Width >= dimensions.Height ? Partition.Horizontal : Partition.Vertical;
             var splitLength = (orientation == Partition.Horizontal ? dimensions.Width : dimensions.Height) / 2;
@@ -76,14 +76,14 @@ namespace Datastructures
         }
         
         /// <summary> Creates a new split with given dimensions and subtrees. </summary>
-        public Split(Size dimension, Region<T> firstRegion, Region<T> secondRegion) : this(dimension)
+        public Split(Size2I dimension, Region<T> firstRegion, Region<T> secondRegion) : this(dimension)
         {
             FirstRegion = firstRegion;
             SecondRegion = secondRegion;
         }
 
         /// <summary> Creates a new split with given dimensions, orientation, and split length. </summary>
-        public Split(Size dimensions, Partition orientation, int splitLength)
+        public Split(Size2I dimensions, Partition orientation, int splitLength)
         {
             Dimensions = dimensions;
             Orientation = orientation;
@@ -92,7 +92,7 @@ namespace Datastructures
 
         /// <summary> Creates a new split with given dimensions, orientation, split length and subtrees. </summary>
         public Split(
-            Size dimension,
+            Size2I dimension,
             Partition orientation,
             int splitLength,
             Region<T> firstRegion,
@@ -173,7 +173,7 @@ namespace Datastructures
         }
 
         /// <summary> Constructs a new subtree with given width, height dimensions. </summary>
-        private static Region<T> CreateSubRegion(Size dimensions)
+        private static Region<T> CreateSubRegion(Size2I dimensions)
         {
             var area = dimensions.Area;
             if (area > 1)

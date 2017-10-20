@@ -144,9 +144,14 @@ namespace Geometry
 
         #region Conversions
 
-        public static implicit operator Size(Vector2I vector)
+        public static implicit operator Size2I(Vector2I vector)
         {
-            return new Size(vector.x, vector.y);
+            return new Size2I(vector.x, vector.y);
+        }
+
+        public static implicit operator Vector3I(Vector2I vector)
+        {
+            return new Vector3I(vector.x, vector.y);
         }
 
         public static implicit operator Vector2(Vector2I vector)
@@ -154,9 +159,9 @@ namespace Geometry
             return new Vector2(vector.x, vector.y);
         }
 
-        public static implicit operator Vector3I(Vector2I vector)
+        public static implicit operator Vector3(Vector2I vector)
         {
-            return new Vector3I(vector.x, vector.y);
+            return new Vector3(vector.x, vector.y);
         }
 
         #endregion

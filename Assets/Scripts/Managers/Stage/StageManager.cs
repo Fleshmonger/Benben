@@ -1,14 +1,15 @@
-﻿using UnityEngine;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using UnityEngine;
+using Datastructures;
 using Geometry;
 
 namespace Gameplay
 {
-    //TODO This should be compiled with MapManager into a super-map class.
     public sealed class StageManager : Singleton<StageManager>
     {
         public Mark mark;
         public Block blockPrefab;
+        public Scape scape;
 
         private List<Object> props = new List<Object>();
 
@@ -53,7 +54,7 @@ namespace Gameplay
         {
             mark.gameObject.SetActive(true);
             mark.transform.position = GridToWorld(gridX, gridY, gridZ);
-            mark.SetValid(isValid);
+            mark.IsValid = isValid;
         }
 
         public void ClearMark()
@@ -73,6 +74,11 @@ namespace Gameplay
             GameObject prop = Instantiate(propPrefab, worldPos, Quaternion.identity) as GameObject;
             props.Add(prop);
             return prop;
+        }
+
+        public void UpdateScenery(Map.Map map)
+        {
+            scape.ConstructMesh(map);
         }
     }
 }

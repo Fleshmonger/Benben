@@ -29,7 +29,7 @@ namespace Gameplay.Map
         // Determines if all the tiles are empty.
         public static bool IsEmpty(Tile[,] tiles)
         {
-            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            var size = new Size2I(tiles.GetLength(0), tiles.GetLength(1));
             for (var i = 0; i < size.Width; i++)
             {
                 for (var j = 0; j < size.Height; j++)
@@ -76,7 +76,7 @@ namespace Gameplay.Map
         // Determines if any of the tiles match the team.
         public static bool IsOwned(Tile[,] tiles, Team team)
         {
-            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            var size = new Size2I(tiles.GetLength(0), tiles.GetLength(1));
             for (var i = 0; i < size.Width; i++)
             {
                 for (var j = 0; j < size.Height; j++)
@@ -94,7 +94,7 @@ namespace Gameplay.Map
         // Determines if the tiles are of the same height.
         public static bool IsLevel(Tile[,] tiles)
         {
-            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            var size = new Size2I(tiles.GetLength(0), tiles.GetLength(1));
             var depth = tiles[0, 0].Height;
             for (var i = 0; i < size.Width; i++)
             {
@@ -112,7 +112,7 @@ namespace Gameplay.Map
         // Determines if the tiles contains two different blocks.
         public static bool IsComposite(Tile[,] tiles)
         {
-            var size = new Size(tiles.GetLength(0), tiles.GetLength(1));
+            var size = new Size2I(tiles.GetLength(0), tiles.GetLength(1));
             GameObject prop = null;
             for (var i = 0; i < size.Width; i++)
             {

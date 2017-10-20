@@ -1,6 +1,7 @@
 ﻿using UnityEngine.SceneManagement;
-using Gameplay.Map;
+using Datastructures;
 using Geometry;
+using Gameplay.Map;
 
 namespace Gameplay
 {
@@ -19,10 +20,10 @@ namespace Gameplay
         public void PlayerMove(int x, int y)
         {
             var teamManager = TeamManager.Instance;
-            var mapManager = Map.Map.Instance;
+            var map = Map.Map.Instance;
             if (!isGameOver && MapUtil.IsValid(x, y, blockSize, teamManager.activeTeam, Map.Map.Instance))
             {
-                var height = mapManager.GetTile(x, y).Height + 1;
+                var height = map.GetTile(x, y).Height + 1;
                 SetBlock(x, y, height, teamManager.activeTeam);
                 if (height >= goalDepth)
                 {
@@ -32,6 +33,7 @@ namespace Gameplay
                 {
                     teamManager.CycleActiveTeam();
                 }
+                StageManager.Instance.UpdateScenery(map);
             }
         }
 

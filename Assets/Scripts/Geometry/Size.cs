@@ -1,17 +1,18 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Geometry
 {
     /// <summary> Representation of 2D integer rectangle. </summary>
-    public class Size
+    public struct Size2I
     {
         #region Constants
 
         /// <summary> Shorthand for writing Size(0, 0). </summary>
-        public static readonly Size zero = new Size(0, 0);
+        public static readonly Size2I zero = new Size2I(0, 0);
 
         /// <summary> Shorthand for writing Size(1, 1). </summary>
-        public static readonly Size one = new Size(1, 1);
+        public static readonly Size2I one = new Size2I(1, 1);
 
         #endregion
 
@@ -62,14 +63,12 @@ namespace Geometry
         #endregion
 
         #region Constructors
-
-        public Size() : this(0, 0) { }
-
+        
         /// <summary> Creates a new size with given width, height components. </summary>
-        public Size(int width, int height)
+        public Size2I(int width, int height)
         {
-            Width = width;
-            Height = height;
+            _width = Math.Max(width, 0);
+            _height = Math.Max(height, 0);
         }
 
         #endregion
@@ -88,55 +87,72 @@ namespace Geometry
             return Contains(point.x, point.y);
         }
 
+        /// <summary> Returns the offset of given x, y coordinates from the size's container. </summary>
+        public Vector2I Offset(int x, int y)
+        {
+            return new Vector2I(Compare(x, Width), Compare(y, Height));
+        }
+
+        /// <summary> Returns the numerical distance of the value from the interval [0, length]. </summary>
+        private static int Compare(int value, int length)
+        {
+            return value - Mathf.Clamp(value, 0, length - 1);
+        }
+
         #endregion
 
         #region Operators
 
-        public static Size operator -(Size a, Size b)
+        public static Size2I operator -(Size2I a, Size2I b)
         {
-            return new Size(a.Width - b.Width, a.Height - b.Height);
+            return new Size2I(a.Width - b.Width, a.Height - b.Height);
         }
 
-        public static Size operator -(Size size, Vector2I vector)
+        public static Size2I operator -(Size2I size, Vector2I vector)
         {
-            return new Size(size.Width - vector.x, size.Height - vector.y);
+            return new Size2I(size.Width - vector.x, size.Height - vector.y);
         }
 
-        public static Size operator *(Size a, Size b)
+        public static Size2I operator *(int i, Size2I size)
         {
-            return new Size(a.Width * b.Width, a.Height * b.Height);
+            return new Size2I(i * size.Width, i * size.Height);
         }
 
-        public static Size operator *(Size size, Vector2I vector)
+        public static Size2I operator *(Size2I a, Size2I b)
         {
-            return new Size(size.Width * vector.x, size.Height * vector.y);
+            return new Size2I(a.Width * b.Width, a.Height * b.Height);
         }
 
-        public static Size operator /(Size size, int n)
+        public static Size2I operator *(Size2I size, Vector2I vector)
         {
-            return new Size(size.Width / n, size.Height / n);
+            return new Size2I(size.Width * vector.x, size.Height * vector.y);
+        }
+
+        public static Size2I operator /(Size2I size, int n)
+        {
+            return new Size2I(size.Width / n, size.Height / n);
         }
 
         #endregion
 
         #region Conversions
 
-        public static implicit operator Vector2I(Size size)
+        public static implicit operator Vector2I(Size2I size)
         {
             return new Vector2I(size.Width, size.Height);
         }
 
-        public static implicit operator Vector3I(Size size)
+        public static implicit operator Vector3I(Size2I size)
         {
             return (Vector2I)size;
         }
 
-        public static implicit operator Vector2(Size size)
+        public static implicit operator Vector2(Size2I size)
         {
             return new Vector2(size.Width, size.Height);
         }
 
-        public static implicit operator Vector3(Size size)
+        public static implicit operator Vector3(Size2I size)
         {
             return (Vector2)size;
         }

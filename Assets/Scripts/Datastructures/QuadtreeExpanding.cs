@@ -17,7 +17,7 @@ namespace Datastructures
         #region Properties
 
         /// <summary> The size of the quadtree. </summary>
-        public Size Dimensions { get; private set; }
+        public Size2I Dimensions { get; private set; }
 
         /// <summary> The local top-left corner of the quadtree. </summary>
         public Vector2I Origin { get; private set; }
@@ -26,10 +26,10 @@ namespace Datastructures
 
         #region Constructors
 
-        public QuadtreeExpanding() : this(new Size()) { }
+        public QuadtreeExpanding() : this(new Size2I()) { }
 
         /// <summary> Creates a new expanding quadtree with the given initial dimensions. </summary>
-        public QuadtreeExpanding(Size dimensions)
+        public QuadtreeExpanding(Size2I dimensions)
         {
             Dimensions = dimensions;
             var area = dimensions.Area;
@@ -39,13 +39,13 @@ namespace Datastructures
             }
             else
             {
-                Dimensions = Size.one;
+                Dimensions = Size2I.one;
                 _values = new Cell<T>();
             }
         }
 
         /// <summary> Creates a new expanding quadtree with the given initial dimensions and origin. </summary>
-        public QuadtreeExpanding(Size dimensions, Vector2I origin) : this(dimensions)
+        public QuadtreeExpanding(Size2I dimensions, Vector2I origin) : this(dimensions)
         {
             Origin = origin;
         }
@@ -95,7 +95,7 @@ namespace Datastructures
                 var offsetY = 0;
                 var width = Dimensions.Width;
                 var height = Dimensions.Height;
-                var distance = Distance(x, y);
+                var distance = Dimensions.Offset(x - Origin.x, y - Origin.y);
                 int splitLength;
                 Split<T>.Partition orientation;
                 Region<T> first = null;
@@ -128,20 +128,10 @@ namespace Datastructures
                 {
                     second = _values;
                 }
-                Dimensions = new Size(width, height);
+                Dimensions = new Size2I(width, height);
                 _values = new Split<T>(Dimensions, orientation, splitLength, first, second);
                 Origin += new Vector2I(offsetX, offsetY);
             }
-        }
-
-        /// <summary> Returns the distance of given x, y coordinates from the local space. </summary>
-        private Vector2I Distance(int x, int y)
-        {
-            var localX = x - Origin.x;
-            var localY = y - Origin.y;
-            var distX = localX - Mathf.Clamp(localX, 0, Dimensions.Width - 1);
-            var distY = localY - Mathf.Clamp(localY, 0, Dimensions.Height - 1);
-            return new Vector2I(distX, distY);
         }
 
         #endregion
